@@ -1,0 +1,9 @@
+# Certificates
+*.crt
+*.key
+okdp-dev-ca.crt
+# AI assistants
+.cursor/
+.claude/
+.agent/
+CLAUDE.md

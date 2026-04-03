@@ -1,0 +1,20 @@
+apiVersion: kubocd.kubotal.io/v1alpha1
+kind: Release
+metadata:
+  name: metrics-server
+  namespace: kubocd-system
+spec:
+  description: "Kubernetes Metrics Server - feeds kubectl top and the OKDP Console Resource usage panels"
+  package:
+    repository: quay.io/kubotal/packages-dev/metrics-server
+    tag: 0.1.0
+    interval: 30m
+    timeout: 5m
+  parameters:
+    insecureKubeletTls: true
+    metricResolution: "15s"
+  contexts:
+    - name: default
+      namespace: kubocd-system
+  targetNamespace: kube-system
+  createNamespace: false

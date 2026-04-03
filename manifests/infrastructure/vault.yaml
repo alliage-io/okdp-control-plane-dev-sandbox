@@ -1,0 +1,19 @@
+apiVersion: kubocd.kubotal.io/v1alpha1
+kind: Release
+metadata:
+  name: vault
+  namespace: kubocd-system
+spec:
+  description: "Hashicorp Vault for secrets management"
+  package:
+    repository: quay.io/kubotal/packages-dev/vault
+    tag: 0.1.1
+    interval: 30m
+    timeout: 10m
+  parameters:
+    dev: true
+  contexts:
+    - name: default
+      namespace: kubocd-system
+  targetNamespace: vault-system
+  createNamespace: true

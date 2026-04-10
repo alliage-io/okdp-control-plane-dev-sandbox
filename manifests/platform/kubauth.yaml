@@ -1,0 +1,36 @@
+apiVersion: kubocd.kubotal.io/v1alpha1
+kind: Release
+metadata:
+  name: kubauth
+  namespace: okdp-system
+spec:
+  contexts:
+    - name: default
+      namespace: kubocd-system
+  package:
+    repository: quay.io/kubotal/packages-dev/kubauth
+    tag: 0.1.2-patched
+  parameters:
+    merger:
+      enabled: false
+    ldap:
+      enabled: false
+    ucrd:
+      enabled: true
+      namespace: okdp-system
+      createNamespace: false
+    audit:
+      enabled: true
+    logger:
+      level: debug
+    oidc:
+      ingress:
+        host: kubauth
+        annotations:
+          nginx.ingress.kubernetes.io/enable-cors: "true"
+          nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:4200"
+          nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+          nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+      clients:
+        createNamespace: false
+        namespace: okdp-system

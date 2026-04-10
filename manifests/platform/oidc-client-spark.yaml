@@ -1,0 +1,35 @@
+apiVersion: kubauth.kubotal.io/v1alpha1
+kind: OidcClient
+metadata:
+  name: okdp-spark
+  namespace: okdp-system
+spec:
+  displayName: "OKDP Spark"
+  description: "OIDC Client for Spark History Server and Spark UIs"
+  public: false
+  entryURL: "https://kubauth.okdp.dev-sandbox"
+  accessTokenLifespan: 1h0m0s
+  idTokenLifespan: 1h0m0s
+  refreshTokenLifespan: 1h0m0s
+  redirectURIs:
+    - "https://*.okdp.dev-sandbox/"
+    - "https://*.okdp.dev-sandbox"
+  postLogoutURL: "https://kubauth.okdp.dev-sandbox"
+  grantTypes:
+    - "authorization_code"
+    - "refresh_token"
+  responseTypes:
+    - "id_token"
+    - "code"
+    - "token"
+    - "id_token token"
+    - "code id_token"
+    - "code token"
+    - "code id_token token"
+  scopes:
+    - "openid"
+    - "profile"
+    - "email"
+    - "groups"
+    - "offline_access"
+  forceOpenIdScope: true

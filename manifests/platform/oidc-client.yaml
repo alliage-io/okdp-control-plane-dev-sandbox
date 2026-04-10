@@ -1,0 +1,36 @@
+apiVersion: kubauth.kubotal.io/v1alpha1
+kind: OidcClient
+metadata:
+  name: okdp-app
+  namespace: okdp-system
+spec:
+  displayName: "OKDP App (Local)"
+  description: "OIDC Client for Local Development"
+  public: true
+  entryURL: "http://localhost:4200"
+  accessTokenLifespan: 1h0m0s
+  idTokenLifespan: 1h0m0s
+  refreshTokenLifespan: 1h0m0s
+  redirectURIs:
+    - "http://localhost:4200/"
+    - "http://localhost:4200"
+    - "http://localhost:4200/silent-refresh.html"
+  postLogoutURL: "http://localhost:4200"
+  grantTypes:
+    - "authorization_code"
+    - "refresh_token"
+  responseTypes:
+    - "id_token"
+    - "code"
+    - "token"
+    - "id_token token"
+    - "code id_token"
+    - "code token"
+    - "code id_token token"
+  scopes:
+    - "openid"
+    - "profile"
+    - "email"
+    - "groups"
+    - "offline_access"
+  forceOpenIdScope: true

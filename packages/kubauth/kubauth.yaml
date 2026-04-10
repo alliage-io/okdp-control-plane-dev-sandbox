@@ -1,0 +1,364 @@
+apiVersion: v1alpha1
+dependencies:
+- ingress
+- certManager
+modules:
+- name: noname
+  source:
+    oci:
+      repository: quay.io/kubotal/packages-dev/kubauth
+      tag: "0.2.1"
+      chart: kubauth
+  values: |
+    deployInControlPlane: {{ .Parameters.deployInControlPlane }}
+    {{- if .Parameters.deployInServicePlane }}
+    tolerations:
+      - key: node-role.kubernetes.io
+        operator: "Equal"
+        effect: NoSchedule
+        value: services
+    nodeSelector:
+      node-role.kubernetes.io: "services"
+    {{- end }}
+    networkPolicies:
+      forWebhooks: true
+      {{- with .Context.cluster.hostNetworkCidr }}
+      ipBlock: {{ . }}
+      {{- end }}
+    oidc:
+      enabled: true
+      logger:
+        mode: {{ .Parameters.logger.mode }}
+        level: {{ .Parameters.oidc.logger.level | default .Parameters.logger.level }}
+      server:
+        certificateIssuer: {{ .Context.certificateIssuer.public }}
+        tls: {{ .Parameters.oidc.server.tls }}
+      ingress:
+        host: {{ .Parameters.oidc.ingress.host}}.{{.Context.ingress.suffix}}
+        class: {{ .Context.ingress.className }}
+        annotations:
+          {{- toYaml .Parameters.oidc.ingress.annotations | nindent 12 }}
+      postLogoutURL: https://{{ .Parameters.oidc.ingress.host}}.{{.Context.ingress.suffix}}/index
+      issuer: https://{{ .Parameters.oidc.ingress.host}}.{{.Context.ingress.suffix}}
+      networkPolicies:
+        enabled: {{ .Context.networkPolicies}}
+      sso:
+        cleanupPeriod: 5m
+        sticky: {{ .Parameters.oidc.sso.sticky }}
+      allowPasswordGrant: {{ .Parameters.oidc.allowPasswordGrant }}
+      enforcePKCE: {{ .Parameters.oidc.enforcePKCE }}
+      clients:
+        createNamespace: {{ .Parameters.oidc.clients.createNamespace }}
+        namespace: {{ .Parameters.oidc.clients.namespace }}
+      multiTenant: false
+      idProvider:
+        {{- if .Parameters.audit.enabled }}
+        baseURL: http://localhost:6805
+        {{- else if .Parameters.merger.enabled }}
+        baseURL: http://localhost:6804
+        {{- else if .Parameters.ldap.enabled }}
+        baseURL: http://localhost:6803
+        {{- else if .Parameters.ucrd.enabled }}
+        baseURL: http://localhost:6802
+        {{- else }}
+        {{ fail "No identity provider defined above oidc" }}
+        {{- end }}
+
+    audit:
+      enabled: {{ .Parameters.audit.enabled }}
+      logger:
+        mode: {{ .Parameters.logger.mode }}
+        level: {{ .Parameters.audit.logger.level | default .Parameters.logger.level }}
+      idProvider:
+        {{- if .Parameters.merger.enabled }}
+        baseURL: http://localhost:6804
+        {{- else if .Parameters.ldap.enabled }}
+        baseURL: http://localhost:6803
+        {{- else if .Parameters.ucrd.enabled }}
+        baseURL: http://localhost:6802
+        {{- else }}
+        {{ fail "No identity provider defined above oidc" }}
+        {{- end }}
+
+    merger:
+      enabled: {{ .Parameters.merger.enabled }}
+      logger:
+        mode: {{ .Parameters.logger.mode }}
+        level: {{ .Parameters.merger.logger.level | default .Parameters.logger.level }}
+      idProviders:
+        {{- if .Parameters.ldap.enabled }}
+        - name: ldap
+          httpConfig:
+            baseURL: http://localhost:6803
+          credentialAuthority: {{ .Parameters.ldap.credentialAuthority }}
+          groupAuthority: {{ .Parameters.ldap.groupAuthority }}
+          groupPattern: "{{ .Parameters.ldap.groupPattern }}"
+          claimAuthority: {{ .Parameters.ldap.claimAuthority }}
+          claimPattern: "{{ .Parameters.ldap.claimPattern }}"
+          nameAuthority: {{ .Parameters.ldap.nameAuthority }}
+          emailAuthority: {{ .Parameters.ldap.emailAuthority }}
+          critical: {{ .Parameters.ldap.critical }}
+          uidOffset: {{ .Parameters.ldap.uidOffset }}
+        {{- end }}
+        {{- if .Parameters.ucrd.enabled }}
+        - name: ucrd
+          httpConfig:
+            baseURL: http://localhost:6802
+          credentialAuthority: {{ .Parameters.ucrd.credentialAuthority }}
+          groupAuthority: {{ .Parameters.ucrd.groupAuthority }}
+          groupPattern: "{{ .Parameters.ucrd.groupPattern }}"
+          claimAuthority: {{ .Parameters.ucrd.claimAuthority }}
+          claimPattern: "{{ .Parameters.ucrd.claimPattern }}"
+          nameAuthority: {{ .Parameters.ucrd.nameAuthority }}
+          emailAuthority: {{ .Parameters.ucrd.emailAuthority }}
+          critical: {{ .Parameters.ucrd.critical }}
+          uidOffset: {{ .Parameters.ucrd.uidOffset }}
+        {{- end }}
+
+    ucrd:
+      enabled: {{ .Parameters.ucrd.enabled }}
+      namespace: {{ .Parameters.ucrd.namespace }}
+      createNamespace: {{ .Parameters.ucrd.createNamespace }}
+      logger:
+        mode: {{ .Parameters.logger.mode }}
+        level: {{ .Parameters.ucrd.logger.level | default .Parameters.logger.level }}
+
+    ldap:
+      enabled: {{ .Parameters.ldap.enabled }}
+      logger:
+        mode: {{ .Parameters.logger.mode }}
+        level: {{ .Parameters.ldap.logger.level | default .Parameters.logger.level }}
+      ldap:
+        {{- toYaml .Context.ldap | nindent 4 }}
+name: kubauth
+protected: false
+roles:
+- oidc-server
+schema:
+  context:
+    properties:
+      certificateIssuer:
+        properties:
+          public:
+            required: true
+            type: string
+        required: true
+      cluster:
+        properties:
+          hostNetworkCidr:
+            description: Required for multi-nodes kind cluster
+            required: false
+            type: string
+        required: false
+      ingress:
+        properties:
+          className:
+            default: nginx
+            type: string
+          suffix:
+            required: true
+            type: string
+        required: false
+      ldap:
+        additionalProperties: true
+        properties:
+          host:
+            required: true
+            type: string
+        required: false
+      networkPolicies:
+        required: true
+        type: boolean
+  parameters:
+    properties:
+      audit:
+        properties:
+          enabled:
+            default: true
+            type: boolean
+          logger:
+            properties:
+              level:
+                default: info
+                enum:
+                - error
+                - info
+                - debug
+                - trace
+                type: string
+      deployInControlPlane:
+        default: false
+        type: boolean
+      deployInServicePlane:
+        default: false
+        type: boolean
+      ldap:
+        properties:
+          claimAuthority:
+            default: true
+            type: boolean
+          claimPattern:
+            default: '%s'
+            type: string
+          credentialAuthority:
+            default: true
+            type: boolean
+          critical:
+            default: true
+            type: boolean
+          emailAuthority:
+            default: true
+            type: boolean
+          enabled:
+            default: false
+            type: boolean
+          groupAuthority:
+            default: true
+            type: boolean
+          groupPattern:
+            default: '%s'
+            type: string
+          logger:
+            properties:
+              level:
+                default: info
+                enum:
+                - error
+                - info
+                - debug
+                - trace
+                type: string
+          nameAuthority:
+            default: true
+            type: boolean
+          uidOffset:
+            default: 0
+            type: integer
+      logger:
+        properties:
+          level:
+            default: info
+            description: Default log level for all modules
+            enum:
+            - error
+            - info
+            - debug
+            - trace
+            type: string
+          mode:
+            default: text
+            description: Log format. Apply to all module
+            enum:
+            - text
+            - json
+            type: string
+      merger:
+        properties:
+          enabled:
+            default: false
+            type: boolean
+          logger:
+            properties:
+              level:
+                default: info
+                enum:
+                - error
+                - info
+                - debug
+                - trace
+                type: string
+      oidc:
+        properties:
+          allowPasswordGrant:
+            default: false
+            type: boolean
+          clients:
+            properties:
+              createNamespace:
+                default: true
+                type: boolean
+              namespace:
+                default: kubauth-oidc
+                type: string
+          enforcePKCE:
+            default: false
+            type: boolean
+          ingress:
+            properties:
+              annotations:
+                additionalProperties: true
+                properties: {}
+                type: object
+              host:
+                default: kubauth
+                type: string
+          logger:
+            properties:
+              level:
+                default: info
+                enum:
+                - error
+                - info
+                - debug
+                - trace
+                type: string
+          server:
+            properties:
+              tls:
+                default: true
+                type: boolean
+          sso:
+            properties:
+              sticky:
+                default: false
+                type: boolean
+      ucrd:
+        properties:
+          claimAuthority:
+            default: true
+            type: boolean
+          claimPattern:
+            default: '%s'
+            type: string
+          credentialAuthority:
+            default: true
+            type: boolean
+          critical:
+            default: true
+            type: boolean
+          emailAuthority:
+            default: true
+            type: boolean
+          createNamespace:
+            default: true
+            type: boolean
+          enabled:
+            default: true
+            type: boolean
+          namespace:
+            default: kubauth-users
+            type: string
+          groupAuthority:
+            default: true
+            type: boolean
+          groupPattern:
+            default: '%s'
+            type: string
+          logger:
+            properties:
+              level:
+                default: info
+                enum:
+                - error
+                - info
+                - debug
+                - trace
+                type: string
+          nameAuthority:
+            default: true
+            type: boolean
+          uidOffset:
+            default: 0
+            type: integer
+tag: 0.2.1
+type: ""

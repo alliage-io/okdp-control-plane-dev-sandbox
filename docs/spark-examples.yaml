@@ -1,0 +1,79 @@
+# Copyright 2024 OKDP
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# =============================================================================
+# Spark Application Examples
+# =============================================================================
+#
+# These examples can be submitted via the OKDP Console UI:
+#   Project Console → Spark → Applications → Submit YAML
+#
+# Replace <PROJECT> with your project/namespace name.
+# The platform automatically injects: project labels, TTL, and spark.ui settings.
+#
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Example 1: Quick SparkPi (~30 seconds)
+# Computes an approximation of Pi using 100 partitions.
+# Good for testing submission, status transitions, and History Server integration.
+# -----------------------------------------------------------------------------
+apiVersion: sparkoperator.k8s.io/v1beta2
+kind: SparkApplication
+metadata:
+  name: spark-pi-quick
+spec:
+  type: Scala
+  mode: cluster
+  image: "quay.io/okdp/spark:spark-3.5.6-scala-2.12-java-17"
+  mainClass: "org.apache.spark.examples.SparkPi"
+  mainApplicationFile: "local:///opt/spark/examples/jars/spark-examples_2.12-3.5.6.jar"
+  arguments: ["100"]
+  sparkVersion: "3.5.6"
+  driver:
+    cores: 1
+    memory: "512m"
+    serviceAccount: spark
+  executor:
+    cores: 1
+    memory: "512m"
+    instances: 1
+
+---
+
+# -----------------------------------------------------------------------------
+# Example 2: Long-running SparkPi (~10 minutes)
+# Computes Pi with 1,000,000 partitions to simulate a long-running workload.
+# Good for testing the live Spark UI, real-time log streaming, and job monitoring.
+# -----------------------------------------------------------------------------
+apiVersion: sparkoperator.k8s.io/v1beta2
+kind: SparkApplication
+metadata:
+  name: spark-pi-long
+spec:
+  type: Scala
+  mode: cluster
+  image: "quay.io/okdp/spark:spark-3.5.6-scala-2.12-java-17"
+  mainClass: "org.apache.spark.examples.SparkPi"
+  mainApplicationFile: "local:///opt/spark/examples/jars/spark-examples_2.12-3.5.6.jar"
+  arguments: ["1000000"]
+  sparkVersion: "3.5.6"
+  driver:
+    cores: 1
+    memory: "1g"
+    serviceAccount: spark
+  executor:
+    cores: 1
+    memory: "1g"
+    instances: 1

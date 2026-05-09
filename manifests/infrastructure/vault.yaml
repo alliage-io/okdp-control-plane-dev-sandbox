@@ -6,7 +6,7 @@ metadata:
 spec:
   description: "Hashicorp Vault for secrets management"
   package:
-    repository: quay.io/kubotal/packages-dev/vault
+    repository: quay.io/okdp/packages-dev/vault
     tag: 0.1.1
     interval: 30m
     timeout: 10m

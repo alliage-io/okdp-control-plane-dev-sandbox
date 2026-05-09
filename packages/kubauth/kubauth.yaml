@@ -6,7 +6,7 @@ modules:
 - name: noname
   source:
     oci:
-      repository: quay.io/kubotal/packages-dev/kubauth
+      repository: quay.io/okdp/packages-dev/kubauth
       tag: "0.2.1"
       chart: kubauth
   values: |

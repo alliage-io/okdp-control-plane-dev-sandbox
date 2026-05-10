@@ -112,29 +112,33 @@ spec:
           category: data-processing
         - name: trino
           versions:
+            - "0.2.0"
             - "0.1.0"
-          default: "0.1.0"
-          description: "Distributed SQL query engine with OIDC authentication via Kubauth"
+          default: "0.2.0"
+          description: "Distributed SQL query engine (Trino 480) with OAuth2 + JWT auth via Kubauth"
           icon: pi-search
           category: data-querying
         - name: polaris
           versions:
+            - "0.2.0"
             - "0.1.0"
-          default: "0.1.0"
-          description: "Apache Polaris — Iceberg REST catalog with OIDC, Trino integration, and S3/STS"
+          default: "0.2.0"
+          description: "Apache Polaris 1.3.0-incubating — Iceberg REST catalog with OIDC + CA trust"
           icon: pi-database
           category: data-catalog
         - name: superset
           versions:
+            - "0.2.0"
             - "0.1.0"
-          default: "0.1.0"
-          description: "Apache Superset BI platform with OIDC authentication via kubauth"
+          default: "0.2.0"
+          description: "Apache Superset with kubauth OIDC, role mapping, feature flags, optional example dashboards"
           icon: pi-chart-bar
           category: data-visualization
         - name: airflow
           versions:
+            - "0.2.0"
             - "0.1.0"
-          default: "0.1.0"
-          description: "Apache Airflow workflow orchestrator with KubernetesExecutor and OIDC"
+          default: "0.2.0"
+          description: "Apache Airflow 3.2.1 workflow orchestrator with KubernetesExecutor, triggerer, OIDC, git-sync"
           icon: pi-sitemap
           category: data-orchestration

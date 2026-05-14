@@ -124,3 +124,10 @@ spec:
           description: "Apache Polaris — Iceberg REST catalog with OIDC, Trino integration, and S3/STS"
           icon: pi-database
           category: data-catalog
+        - name: superset
+          versions:
+            - "0.1.0"
+          default: "0.1.0"
+          description: "Apache Superset BI platform with OIDC authentication via kubauth"
+          icon: pi-chart-bar
+          category: data-visualization

@@ -7,3 +7,6 @@ okdp-dev-ca.crt
 .claude/
 .agent/
 CLAUDE.md
+
+# macOS
+.DS_Store

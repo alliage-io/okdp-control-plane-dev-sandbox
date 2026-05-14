@@ -5,7 +5,7 @@ metadata:
   namespace: okdp-system
 spec:
   package:
-    repository: quay.io/okdp/packages-dev/spark-operator
+    repository: quay.io/kubotal/packages-dev/spark-operator
     tag: 0.3.0
   contexts:
     - name: default

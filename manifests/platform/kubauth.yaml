@@ -8,7 +8,7 @@ spec:
     - name: default
       namespace: kubocd-system
   package:
-    repository: quay.io/okdp/packages-dev/kubauth
+    repository: quay.io/kubotal/packages-dev/kubauth
     tag: 0.1.2-patched
   parameters:
     merger:

@@ -8,7 +8,7 @@ spec:
   createNamespace: true
   package:
     interval: 30m
-    repository: quay.io/okdp/packages-dev/dns-server
+    repository: quay.io/kubotal/packages-dev/dns-server
     tag: 1.0.0-p03
     timeout: 10m
   contexts:

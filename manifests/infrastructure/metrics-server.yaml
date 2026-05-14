@@ -6,7 +6,7 @@ metadata:
 spec:
   description: "Kubernetes Metrics Server - feeds kubectl top and the OKDP Console Resource usage panels"
   package:
-    repository: quay.io/okdp/packages-dev/metrics-server
+    repository: quay.io/kubotal/packages-dev/metrics-server
     tag: 0.1.0
     interval: 30m
     timeout: 5m

@@ -87,7 +87,7 @@ spec:
           tag: "0.1.0"
 
     okdp:
-      packageRepository: quay.io/okdp/packages-dev
+      packageRepository: quay.io/kubotal/packages-dev
 
       services:
         - name: jupyterhub

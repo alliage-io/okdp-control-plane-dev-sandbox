@@ -6,7 +6,7 @@ metadata:
 spec:
   description: "CoreDNS configuration patch for local domain resolution"
   package:
-    repository: quay.io/okdp/packages-dev/coredns-patch
+    repository: quay.io/kubotal/packages-dev/coredns-patch
     tag: 0.1.0
     interval: 30m
     timeout: 10m

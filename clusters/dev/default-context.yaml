@@ -110,3 +110,10 @@ spec:
           description: "Spark History Server with OIDC auth and Spark Web Proxy for live job monitoring"
           icon: pi-bolt
           category: data-processing
+        - name: trino
+          versions:
+            - "0.1.0"
+          default: "0.1.0"
+          description: "Distributed SQL query engine with OIDC authentication via Kubauth"
+          icon: pi-search
+          category: data-querying

@@ -142,13 +142,13 @@ Vault est déployé avec un Ingress et accessible via :
  
 Ce sandbox fournit l'infrastructure de base (Kubernetes + OIDC) nécessaire pour développer sur les autres composants de la plateforme.
  
-*   **Backend (`okdp-server-new`)** :
+*   **Backend (`okdp-control-plane-server-poc`)** :
  
     Si ce n'est pas déjà fait, clonez le dépôt :
-    `https://github.com/kubotal/okdp-server-new.git`
+    `https://github.com/OKDP/okdp-control-plane-server-poc.git`
  
     ```bash
-    cd okdp-server-new
+    cd okdp-control-plane-server-poc
     
     # Configurer l'accès au cluster (Kind)
     kind get kubeconfig --name okdp-dev > ~/.kube/okdp-dev-config
@@ -159,13 +159,13 @@ Ce sandbox fournit l'infrastructure de base (Kubernetes + OIDC) nécessaire pour
     ```
     > Le serveur écoutera sur `http://localhost:8093`.
 
-*   **Frontend (`okdp-ui-new`)** :
+*   **Frontend (`okdp-control-plane-ui-poc`)** :
  
     Si ce n'est pas déjà fait, clonez le dépôt :
-    `https://github.com/kubotal/okdp-ui-new.git`
+    `https://github.com/OKDP/okdp-control-plane-ui-poc.git`
  
     ```bash
-    cd okdp-ui-new
+    cd okdp-control-plane-ui-poc
     npm install
     npm start
     ```

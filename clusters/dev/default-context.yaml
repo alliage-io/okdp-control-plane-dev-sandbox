@@ -117,3 +117,10 @@ spec:
           description: "Distributed SQL query engine with OIDC authentication via Kubauth"
           icon: pi-search
           category: data-querying
+        - name: polaris
+          versions:
+            - "0.1.0"
+          default: "0.1.0"
+          description: "Apache Polaris — Iceberg REST catalog with OIDC, Trino integration, and S3/STS"
+          icon: pi-database
+          category: data-catalog

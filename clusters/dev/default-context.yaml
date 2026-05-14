@@ -131,3 +131,10 @@ spec:
           description: "Apache Superset BI platform with OIDC authentication via kubauth"
           icon: pi-chart-bar
           category: data-visualization
+        - name: airflow
+          versions:
+            - "0.1.0"
+          default: "0.1.0"
+          description: "Apache Airflow workflow orchestrator with KubernetesExecutor and OIDC"
+          icon: pi-sitemap
+          category: data-orchestration

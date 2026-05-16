@@ -7,8 +7,7 @@ modules:
   source:
     oci:
       repository: quay.io/okdp/packages-dev/kubauth
-      tag: "0.2.1"
-      chart: kubauth
+      tag: "0.4.0-snapshot"
   values: |
     deployInControlPlane: {{ .Parameters.deployInControlPlane }}
     {{- if .Parameters.deployInServicePlane }}
@@ -25,8 +24,12 @@ modules:
       {{- with .Context.cluster.hostNetworkCidr }}
       ipBlock: {{ . }}
       {{- end }}
+    # Pin binary image to OKDP-published pre-release while the upstream
+    # kubauth team has not tagged a 0.4.0 binary on quay.io/kubauth/exec.
     oidc:
       enabled: true
+      image:
+        repository: quay.io/okdp/packages-dev/kubauth-exec
       logger:
         mode: {{ .Parameters.logger.mode }}
         level: {{ .Parameters.oidc.logger.level | default .Parameters.logger.level }}
@@ -36,8 +39,9 @@ modules:
       ingress:
         host: {{ .Parameters.oidc.ingress.host}}.{{.Context.ingress.suffix}}
         class: {{ .Context.ingress.className }}
+        passthrough: false
         annotations:
-          {{- toYaml .Parameters.oidc.ingress.annotations | nindent 12 }}
+          {{- toYaml .Parameters.oidc.ingress.annotations | nindent 10 }}
       postLogoutURL: https://{{ .Parameters.oidc.ingress.host}}.{{.Context.ingress.suffix}}/index
       issuer: https://{{ .Parameters.oidc.ingress.host}}.{{.Context.ingress.suffix}}
       networkPolicies:
@@ -66,6 +70,8 @@ modules:
 
     audit:
       enabled: {{ .Parameters.audit.enabled }}
+      image:
+        repository: quay.io/okdp/packages-dev/kubauth-exec
       logger:
         mode: {{ .Parameters.logger.mode }}
         level: {{ .Parameters.audit.logger.level | default .Parameters.logger.level }}
@@ -117,6 +123,8 @@ modules:
 
     ucrd:
       enabled: {{ .Parameters.ucrd.enabled }}
+      image:
+        repository: quay.io/okdp/packages-dev/kubauth-exec
       namespace: {{ .Parameters.ucrd.namespace }}
       createNamespace: {{ .Parameters.ucrd.createNamespace }}
       logger:
@@ -360,5 +368,5 @@ schema:
           uidOffset:
             default: 0
             type: integer
-tag: 0.2.1
+tag: 0.4.0-snapshot
 type: ""

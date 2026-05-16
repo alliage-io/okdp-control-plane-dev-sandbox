@@ -1,3 +1,12 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: okdp-spark-secret
+  namespace: okdp-system
+type: Opaque
+stringData:
+  client-secret: "okdp-spark-shared-client-secret-change-me"
+---
 apiVersion: kubauth.kubotal.io/v1alpha1
 kind: OidcClient
 metadata:
@@ -7,6 +16,10 @@ spec:
   displayName: "OKDP Spark"
   description: "OIDC Client for Spark History Server and Spark UIs"
   public: false
+  secrets:
+    - name: okdp-spark-secret
+      key: client-secret
+      hashed: false
   entryURL: "https://kubauth.okdp.dev-sandbox"
   accessTokenLifespan: 1h0m0s
   idTokenLifespan: 1h0m0s

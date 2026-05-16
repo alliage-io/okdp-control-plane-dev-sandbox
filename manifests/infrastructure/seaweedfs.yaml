@@ -1,0 +1,22 @@
+apiVersion: kubocd.kubotal.io/v1alpha1
+kind: Release
+metadata:
+  name: seaweedfs
+  namespace: kubocd-system
+spec:
+  description: "SeaweedFS distributed object storage (S3-compatible) for the sandbox"
+  package:
+    repository: quay.io/okdp/packages-dev/seaweedfs
+    tag: 0.1.0
+    interval: 30m
+    timeout: 10m
+  parameters:
+    accessKey: okdp-admin
+    secretKey: okdp-admin-secret-change-me
+    volumeSize: 10Gi
+    filerSize: 2Gi
+  contexts:
+    - name: default
+      namespace: kubocd-system
+  targetNamespace: seaweedfs-system
+  createNamespace: true

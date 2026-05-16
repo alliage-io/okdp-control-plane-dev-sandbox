@@ -9,7 +9,7 @@ spec:
       namespace: kubocd-system
   package:
     repository: quay.io/okdp/packages-dev/kubauth
-    tag: 0.1.2-patched
+    tag: "0.4.0-snapshot"
   parameters:
     merger:
       enabled: false

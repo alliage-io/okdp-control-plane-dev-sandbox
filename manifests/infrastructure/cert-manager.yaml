@@ -26,7 +26,7 @@ spec:
       selfSignedClusterIssuers:
         - name: default-issuer
           certificate:
-            commonName: "OKDP Sandbox Self-Signed CA"
+            commonName: "OKDP Control Plane Sandbox Self-Signed CA"
             organization: "OKDP"
             country: "FR"
             validity: "8760h"

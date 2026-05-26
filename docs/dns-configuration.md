@@ -12,7 +12,7 @@ Créez (ou modifiez) le fichier `/etc/resolver/okdp.dev-sandbox` pour rediriger 
 
 ```text
 nameserver 127.0.0.1
-port 53
+port 30053
 ```
 
 *(Note : Sous macOS, assurez-vous que le répertoire `/etc/resolver` existe via `sudo mkdir -p /etc/resolver`).*

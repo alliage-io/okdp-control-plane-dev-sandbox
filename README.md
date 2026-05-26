@@ -32,9 +32,15 @@ Ce sandbox permet de lancer un cluster Kubernetes (Kind) local avec les composan
       - containerPort: 30443
         hostPort: 443
       - containerPort: 30053
-        hostPort: 53
+        hostPort: 30053
         protocol: UDP
     EOF
+    ```
+    
+    Si vous ne souhaitez pas que ce cluster redémare automatiquement :
+
+    ```bash
+    docker update --restart=no okdp-dev-control-plane
     ```
 
 ### B. Installation de l'Infrastructure (Flux & Kubocd)
@@ -54,36 +60,43 @@ Ce sandbox permet de lancer un cluster Kubernetes (Kind) local avec les composan
 3.  Appliquer le **Context** et les **Releases** :
 
     ```bash
-    # Applique le contexte
+    # Appliquer le contexte
     kubectl apply -f clusters/dev/default-context.yaml
+    ```
 
-    # Déploie les dépendances Système (Ingress, Cert-Manager, DNS-Server, Vault, External Secrets)
+    ```bash
+    # Déployer les dépendances Système (Ingress, Cert-Manager, DNS-Server, Vault, External Secrets)
     kubectl apply -f manifests/infrastructure
-
-    # Attendre que les dépendances Système soient prêtes (inclut coredns-patch pour la résolution DNS interne
+    #
+    # Et attendre que les dépendances Système soient prêtes (inclut coredns-patch pour la résolution DNS interne
     # et metrics-server qui alimente kubectl top + le panel Resource usage du Console)
     kubectl wait --for=jsonpath='{.status.phase}'=READY release/cert-manager release/ingress-nginx release/dns-server release/vault release/external-secrets release/coredns-patch release/metrics-server -n kubocd-system --timeout=240s
+    ```
 
-
-    # Créer le namespace système
+    ```bash
+    # Créer le namespace système pour okdp
     kubectl create namespace okdp-system
+    ```
 
-    # Une fois le système prêt, lance Kubauth
+    ```bash
+    # Deployer Kubauth
     kubectl apply -f manifests/platform/kubauth.yaml
-
-    # Attendre que Kubauth soit prêt (Release & CRDs)
+    #
+    # Et attendre que Kubauth soit prêt (Release & CRDs)
     kubectl wait --for=jsonpath='{.status.phase}'=READY release/kubauth -n okdp-system --timeout=120s
     kubectl wait --for=condition=established --timeout=60s crd/oidcclients.kubauth.kubotal.io
+    ```
 
-
-    # Déploie le Spark Operator (cluster-wide, surveille tous les namespaces)
+    ```bash
+    # Déployer le Spark Operator (cluster-wide, surveille tous les namespaces)
     kubectl apply -f manifests/platform/spark-operator.yaml
     kubectl wait --for=jsonpath='{.status.phase}'=READY release/spark-operator -n okdp-system --timeout=180s
+    ```
 
+    ```bash
     # Créer les clients OIDC
     kubectl apply -f manifests/platform/oidc-client.yaml
     kubectl apply -f manifests/platform/oidc-client-spark.yaml
-
     ```
 
 ### C. Initialisation de l'Identité (User Admin)

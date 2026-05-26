@@ -2,6 +2,7 @@
 *.crt
 *.key
 okdp-dev-ca.crt
+
 # AI assistants
 .cursor/
 .claude/
@@ -10,3 +11,25 @@ CLAUDE.md
 
 # kubocd dump artifacts (local debug output)
 .dump/
+.charts/
+.render
+
+# editor and IDE paraphernalia
+.idea
+.vscode
+*.swp
+*.swo
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/*
+dist
+
+# Misc
+tmp
+.DS_Store
+*.bck

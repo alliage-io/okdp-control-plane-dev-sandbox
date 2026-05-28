@@ -7,7 +7,7 @@ modules:
   source:
     oci:
       repository: quay.io/okdp/packages-dev/kubauth
-      tag: "0.3.0-snapshot-20260525"
+      tag: "0.3.0-fix-userinfo-26052026"
   values: |
     deployInControlPlane: {{ .Parameters.deployInControlPlane }}
     {{- if .Parameters.deployInServicePlane }}
@@ -366,5 +366,5 @@ schema:
           uidOffset:
             default: 0
             type: integer
-tag: 0.3.0-snapshot-20260525
+tag: 0.3.0-fix-userinfo-26052026
 type: ""

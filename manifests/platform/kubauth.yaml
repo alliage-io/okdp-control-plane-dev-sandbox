@@ -9,7 +9,7 @@ spec:
       namespace: kubocd-system
   package:
     repository: quay.io/okdp/packages-dev/kubauth
-    tag: "0.3.0-snapshot-20260525"
+    tag: "0.3.0-fix-userinfo-26052026"
   parameters:
     merger:
       enabled: false

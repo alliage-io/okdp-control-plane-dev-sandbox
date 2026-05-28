@@ -1,24 +1,24 @@
 # OKDP Dev Sandbox (Minimalist)
 
-Environnement de développement minimaliste pour OKDP (Open Kubernetes Data Platform).
-Ce sandbox permet de lancer un cluster Kubernetes (Kind) local avec les composants essentiels (Flux, Kubocd, Kubauth) pour développer les frontends et backends de la plateforme.
+A minimalist development environment for OKDP (Open Kubernetes Data Platform).
+This sandbox spins up a local Kubernetes (Kind) cluster with the essential components (Flux, Kubocd, Kubauth) needed to develop the platform's frontends and backends.
 
-## 1. Prérequis
+## 1. Prerequisites
 
 *   [Docker](https://docs.docker.com/get-docker/) (Runtime)
 *   [Kind](https://kind.sigs.k8s.io/) (Kubernetes in Docker)
-    *   *Validé avec: `v0.27.0`*
+    *   *Tested with: `v0.27.0`*
 *   [Kubectl](https://kubernetes.io/docs/tasks/tools/)
-    *   *Validé avec: `v1.32.2`*
+    *   *Tested with: `v1.32.2`*
 *   [Flux CLI](https://fluxcd.io/flux/installation/)
-    *   *Validé avec: `v2.6.1`*
-*   `kubocd` (Optionnel, pour le build des packages)
+    *   *Tested with: `v2.6.1`*
+*   `kubocd` CLI (Optional, for building packages)
 
-## 2. Démarrage Rapide
+## 2. Quick Start
 
-### A. Création du Cluster
+### A. Create the Cluster
 
-1.  Créer et lancer le cluster :
+1.  Create and start the cluster:
 
     ```bash
     cat <<EOF | kind create cluster --name okdp-dev --config=-
@@ -36,152 +36,152 @@ Ce sandbox permet de lancer un cluster Kubernetes (Kind) local avec les composan
         protocol: UDP
     EOF
     ```
-    
-    Si vous ne souhaitez pas que ce cluster redémare automatiquement :
+
+    To prevent the cluster from restarting automatically:
 
     ```bash
     docker update --restart=no okdp-dev-control-plane
     ```
 
-### B. Installation de l'Infrastructure (Flux & Kubocd)
+### B. Install the Infrastructure (Flux & Kubocd)
 
-1.  Installer **FluxCD** (Mode standalone) :
+1.  Install **FluxCD** (standalone mode):
 
     ```bash
     flux install
     ```
 
-2.  Installer **Kubocd** (Controller & CRDs) :
+2.  Install **Kubocd** (Controller & CRDs):
 
     ```bash
     kubectl apply -f clusters/dev/flux/kubocd.yaml
     ```
 
-3.  Appliquer le **Context** et les **Releases** :
+3.  Apply the **Context** and the **Releases**:
 
     ```bash
-    # Appliquer le contexte
+    # Apply the context
     kubectl apply -f clusters/dev/default-context.yaml
     ```
 
     ```bash
-    # Déployer les dépendances Système (Ingress, Cert-Manager, DNS-Server, Vault, External Secrets)
+    # Deploy the system dependencies (Ingress, Cert-Manager, DNS-Server, Vault, External Secrets)
     kubectl apply -f manifests/infrastructure
     #
-    # Et attendre que les dépendances Système soient prêtes (inclut coredns-patch pour la résolution DNS interne
-    # et metrics-server qui alimente kubectl top + le panel Resource usage du Console)
+    # Then wait for the system dependencies to become ready (includes coredns-patch for internal DNS resolution
+    # and metrics-server, which powers `kubectl top` and the Resource usage panel in the Console)
     kubectl wait --for=jsonpath='{.status.phase}'=READY release/cert-manager release/ingress-nginx release/dns-server release/vault release/external-secrets release/coredns-patch release/metrics-server -n kubocd-system --timeout=240s
     ```
 
     ```bash
-    # Créer le namespace système pour okdp
+    # Create the okdp system namespace
     kubectl create namespace okdp-system
     ```
 
     ```bash
-    # Deployer Kubauth
+    # Deploy Kubauth
     kubectl apply -f manifests/platform/kubauth.yaml
     #
-    # Et attendre que Kubauth soit prêt (Release & CRDs)
+    # Then wait for Kubauth to become ready (Release & CRDs)
     kubectl wait --for=jsonpath='{.status.phase}'=READY release/kubauth -n okdp-system --timeout=120s
     kubectl wait --for=condition=established --timeout=60s crd/oidcclients.kubauth.kubotal.io
     ```
 
     ```bash
-    # Déployer le Spark Operator (cluster-wide, surveille tous les namespaces)
+    # Deploy the Spark Operator (cluster-wide, watches every namespace)
     kubectl apply -f manifests/platform/spark-operator.yaml
     kubectl wait --for=jsonpath='{.status.phase}'=READY release/spark-operator -n okdp-system --timeout=180s
     ```
 
     ```bash
-    # Créer les clients OIDC
+    # Create the OIDC clients
     kubectl apply -f manifests/platform/oidc-client.yaml
     kubectl apply -f manifests/platform/oidc-client-spark.yaml
     ```
 
-### C. Initialisation de l'Identité (User Admin)
+### C. Initialize Identity (Admin User)
 
-Une fois Kubauth lancé, vous devez créer l'utilisateur administrateur et son groupe :
+Once Kubauth is up, create the admin user and its group:
 
-1.  Créer l'utilisateur `useradmin` et le groupe `admins` :
+1.  Create the `useradmin` user and the `admins` group:
 
     ```bash
     kubectl apply -f manifests/platform/user-admin.yaml
     ```
 
-2.  **Identifiants par défaut :**
+2.  **Default credentials:**
 
-    *   **User** : `useradmin`
-    *   **Password** : `password`
+    *   **User**: `useradmin`
+    *   **Password**: `password`
 
-    > ⚠️ **Note :** Le mot de passe est hashé dans le manifest (`passwordHash`).
+    > ⚠️ **Note:** The password is hashed in the manifest (`passwordHash`).
 
-## 3. Accès Local
+## 3. Local Access
 
-Le cluster expose l'Ingress Controller sur les ports locaux `80` et `443` (mappés sur les NodePorts `30080` et `30443` du container Kind).
+The cluster exposes the Ingress Controller on host ports `80` and `443` (mapped from the Kind container's NodePorts `30080` and `30443`).
 
-### Configuration DNS
+### DNS Configuration
 
 
-Le cluster expose un serveur DNS de développement sur le port NodePort `30053` (UDP).
+The cluster exposes a development DNS server on NodePort `30053` (UDP).
 
-Pour configurer votre résolveur local (recommandé pour ne pas toucher à `/etc/hosts`), suivez le guide :
+To configure your local resolver (recommended so you don't have to touch `/etc/hosts`), follow the guide:
 
-👉 **[Voir la documentation DNS](./docs/dns-configuration.md)**
+👉 **[See the DNS documentation](./docs/dns-configuration.md)**
 
-### Certificats SSL
+### SSL Certificates
 
-Pour éviter les avertissements de sécurité (et les erreurs de blocage dans l'UI), vous pouvez faire confiance à l'autorité de certification du sandbox.
+To avoid security warnings (and the blocking errors in the UI), you can trust the sandbox's certificate authority.
 
-**Option 1 : Installer le certificat CA (Recommandé)**
+**Option 1: Install the CA certificate (Recommended)**
 
-Récupérez le certificat CA et ajoutez-le à votre trousseau système ou navigateur :
+Fetch the CA certificate and add it to your system or browser trust store:
 
 ```bash
 kubectl get secret default-issuer -n cert-manager -o jsonpath='{.data.ca\.crt}' | base64 -d > okdp-dev-ca.crt
 ```
 
-**Option 2 : Ignorer les avertissements**
-Accédez manuellement à `https://kubauth.okdp.dev-sandbox` et acceptez le risque (Obligatoire si vous n'installez pas le certificat).
+**Option 2: Ignore the warnings**
+Open `https://kubauth.okdp.dev-sandbox` manually and accept the risk (required if you skip the certificate install).
 
-### Vault (Gestion des secrets)
+### Vault (Secrets Management)
 
-Vault est déployé avec un Ingress et accessible via :
+Vault ships with an Ingress and is available at:
 
-*   **URL** : `https://vault.okdp.dev-sandbox`
-*   **Mode** : Dev (token root par défaut)
+*   **URL**: `https://vault.okdp.dev-sandbox`
+*   **Mode**: Dev (default root token)
 
-## 4. Développement Local
- 
-Ce sandbox fournit l'infrastructure de base (Kubernetes + OIDC) nécessaire pour développer sur les autres composants de la plateforme.
- 
-*   **Backend (`okdp-server-new`)** :
- 
-    Si ce n'est pas déjà fait, clonez le dépôt :
-    `https://github.com/kubotal/okdp-server-new.git`
- 
+## 4. Local Development
+
+This sandbox provides the base infrastructure (Kubernetes + OIDC) needed to develop the platform's other components.
+
+*   **Backend (`okdp-control-plane-server-poc`)**:
+
+    If you haven't already, clone the repo:
+    `https://github.com/OKDP/okdp-control-plane-server-poc.git`
+
     ```bash
-    cd okdp-server-new
-    
-    # Configurer l'accès au cluster (Kind)
+    cd okdp-control-plane-server-poc
+
+    # Point kubectl at the cluster (Kind)
     kind get kubeconfig --name okdp-dev > ~/.kube/okdp-dev-config
     export KUBECONFIG=~/.kube/okdp-dev-config
 
-    # Lancer le serveur
+    # Start the server
     go run cmd/server/main.go
     ```
-    > Le serveur écoutera sur `http://localhost:8093`.
+    > The server listens on `http://localhost:8093`.
 
-*   **Frontend (`okdp-ui-new`)** :
- 
-    Si ce n'est pas déjà fait, clonez le dépôt :
-    `https://github.com/kubotal/okdp-ui-new.git`
- 
+*   **Frontend (`okdp-control-plane-ui-poc`)**:
+
+    If you haven't already, clone the repo:
+    `https://github.com/OKDP/okdp-control-plane-ui-poc.git`
+
     ```bash
-    cd okdp-ui-new
+    cd okdp-control-plane-ui-poc
     npm install
     npm start
     ```
-    > L'application sera accessible sur `http://localhost:4200`.
+    > The app is available at `http://localhost:4200`.
 
-    💡 **Connexion :** Utilisez l'utilisateur `useradmin` / `password` (créé à l'étape 2.C).
+    💡 **Login:** use `useradmin` / `password` (created in step 2.C).

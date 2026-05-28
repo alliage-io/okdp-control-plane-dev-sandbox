@@ -1,31 +1,31 @@
-# Configuration DNS (Local)
+# DNS Configuration (Local)
 
-Pour accéder aux services de la sandbox via des noms de domaine (ex: `*.okdp.dev-sandbox`), un serveur DNS local est déployé dans le cluster sur le port **30053** (UDP).
+To access the sandbox services via domain names (e.g. `*.okdp.dev-sandbox`), a local DNS server is deployed in the cluster on port **30053** (UDP).
 
-Cette configuration permet de ne pas avoir à modifier le fichier `/etc/hosts` pour chaque nouveau service.
+This setup lets you skip editing `/etc/hosts` every time a new service is added.
 
-## Configuration Resolver (macOS / Linux)
+## Resolver Configuration (macOS / Linux)
 
-Créez (ou modifiez) le fichier `/etc/resolver/okdp.dev-sandbox` pour rediriger toutes les requêtes du domaine `.okdp.dev-sandbox` vers le serveur DNS local.
+Create (or edit) `/etc/resolver/okdp.dev-sandbox` to route every `*.okdp.dev-sandbox` query to the local DNS server.
 
-**Fichier : `/etc/resolver/okdp.dev-sandbox`**
+**File: `/etc/resolver/okdp.dev-sandbox`**
 
 ```text
 nameserver 127.0.0.1
 port 30053
 ```
 
-*(Note : Sous macOS, assurez-vous que le répertoire `/etc/resolver` existe via `sudo mkdir -p /etc/resolver`).*
+*(Note: on macOS, make sure the `/etc/resolver` directory exists first: `sudo mkdir -p /etc/resolver`.)*
 
-## Vérification
+## Verification
 
-Testez la résolution d'un sous-domaine quelconque :
+Test resolution against any subdomain:
 
 ```bash
 ping test.okdp.dev-sandbox
-# Résultat attendu :
+# Expected output:
 # PING test.okdp.dev-sandbox (127.0.0.1): 56 data bytes
 # 64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.059 ms
 ```
 
-Si la résolution fonctionne, vous pouvez accéder aux services via HTTPS (ex: `https://kubauth.okdp.dev-sandbox`).
+If resolution works, the services are reachable over HTTPS (e.g. `https://kubauth.okdp.dev-sandbox`).

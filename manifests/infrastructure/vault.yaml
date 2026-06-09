@@ -5,6 +5,11 @@ metadata:
   namespace: kubocd-system
 spec:
   description: "Hashicorp Vault for secrets management"
+  # Vault exposes an Ingress; wait for ingress-nginx (role `ingress`) so its
+  # admission webhook is up before the Ingress is created (avoids the
+  # "validate.nginx.ingress.kubernetes.io: connection refused" install race).
+  dependencies:
+    - ingress
   package:
     repository: quay.io/okdp/packages-dev/vault
     tag: 0.1.1

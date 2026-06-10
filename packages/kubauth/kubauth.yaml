@@ -6,8 +6,8 @@ modules:
 - name: noname
   source:
     oci:
-      repository: quay.io/okdp/packages-dev/kubauth
-      tag: "0.3.0-fix-userinfo-26052026"
+      repository: quay.io/kubauth/charts/kubauth
+      tag: "0.3.0-snapshot"
   values: |
     deployInControlPlane: {{ .Parameters.deployInControlPlane }}
     {{- if .Parameters.deployInServicePlane }}
@@ -27,7 +27,7 @@ modules:
     oidc:
       enabled: true
       image:
-        repository: quay.io/okdp/packages-dev/kubauth-exec
+        repository: quay.io/kubauth/exec/kubauth
       logger:
         mode: {{ .Parameters.logger.mode }}
         level: {{ .Parameters.oidc.logger.level | default .Parameters.logger.level }}
@@ -69,7 +69,7 @@ modules:
     audit:
       enabled: {{ .Parameters.audit.enabled }}
       image:
-        repository: quay.io/okdp/packages-dev/kubauth-exec
+        repository: quay.io/kubauth/exec/kubauth
       logger:
         mode: {{ .Parameters.logger.mode }}
         level: {{ .Parameters.audit.logger.level | default .Parameters.logger.level }}
@@ -122,7 +122,7 @@ modules:
     ucrd:
       enabled: {{ .Parameters.ucrd.enabled }}
       image:
-        repository: quay.io/okdp/packages-dev/kubauth-exec
+        repository: quay.io/kubauth/exec/kubauth
       namespace: {{ .Parameters.ucrd.namespace }}
       createNamespace: {{ .Parameters.ucrd.createNamespace }}
       logger:
@@ -366,5 +366,5 @@ schema:
           uidOffset:
             default: 0
             type: integer
-tag: 0.3.0-fix-userinfo-26052026
+tag: 0.3.0-snapshot
 type: ""

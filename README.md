@@ -155,13 +155,13 @@ Vault ships with an Ingress and is available at:
 
 This sandbox provides the base infrastructure (Kubernetes + OIDC) needed to develop the platform's other components.
 
-*   **Backend (`okdp-control-plane-server-poc`)**:
+*   **Backend (`okdp-control-plane-server`)**:
 
     If you haven't already, clone the repo:
-    `https://github.com/OKDP/okdp-control-plane-server-poc.git`
+    `https://github.com/OKDP/okdp-control-plane-server.git`
 
     ```bash
-    cd okdp-control-plane-server-poc
+    cd okdp-control-plane-server
 
     # Point kubectl at the cluster (Kind)
     kind get kubeconfig --name okdp-dev > ~/.kube/okdp-dev-config
@@ -172,13 +172,13 @@ This sandbox provides the base infrastructure (Kubernetes + OIDC) needed to deve
     ```
     > The server listens on `http://localhost:8093`.
 
-*   **Frontend (`okdp-control-plane-ui-poc`)**:
+*   **Frontend (`okdp-control-plane-ui`)**:
 
     If you haven't already, clone the repo:
-    `https://github.com/OKDP/okdp-control-plane-ui-poc.git`
+    `https://github.com/OKDP/okdp-control-plane-ui.git`
 
     ```bash
-    cd okdp-control-plane-ui-poc
+    cd okdp-control-plane-ui
     npm install
     npm start
     ```
